@@ -1,0 +1,4 @@
+graft pywalletconnectv1
+
+include README.md CHANGELOG.md LICENSE 
+include requirements.txt

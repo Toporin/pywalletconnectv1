@@ -1,0 +1,4 @@
+ecdsa>=0.15
+pyaes>=1.6.1
+pykson>=0.9.9.8.7
+websocket-client>=1.3.1
