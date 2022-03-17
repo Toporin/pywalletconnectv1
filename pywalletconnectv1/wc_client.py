@@ -9,15 +9,16 @@ from pykson import Pykson #, JsonObject, IntegerField, StringField, ObjectListFi
 
 from pywalletconnectv1.wc_cipher import WCCipher
 from pywalletconnectv1.models.wc_method import WCMethod
+from pywalletconnectv1.models.wc_account import WCAccount
 from pywalletconnectv1.models.wc_peer_meta import WCPeerMeta
 from pywalletconnectv1.models.wc_socket_message import WCSocketMessage, MessageType
 from pywalletconnectv1.models.wc_encryption_payload import WCEncryptionPayload
 from pywalletconnectv1.models.session.wc_session import WCSession
 from pywalletconnectv1.models.session.wc_session_update import WCSessionUpdate
 from pywalletconnectv1.models.session.wc_approve_session_response import WCApproveSessionResponse
-from pywalletconnectv1.jsonrpc.json_rpc_response import JsonRpcErrorResponse, JsonRpcResponse, JsonRpcResponse_ApproveSession, JsonRpcResponse_ResultString
+from pywalletconnectv1.jsonrpc.json_rpc_response import JsonRpcErrorResponse, JsonRpcResponse, JsonRpcResponse_ApproveSession, JsonRpcResponse_ResultString, JsonRpcResponse_ResultNone
 from pywalletconnectv1.jsonrpc.json_rpc_error import JsonRpcError
-from pywalletconnectv1.jsonrpc.json_rpc_request import JsonRpcRequest, JsonRpcRequest_SessionRequest, JsonRpcRequest_SessionUpdate, JsonRpcRequest_EthSign, JsonRpcRequest_EthSignTransaction
+from pywalletconnectv1.jsonrpc.json_rpc_request import JsonRpcRequest, JsonRpcRequest_SessionRequest, JsonRpcRequest_SessionUpdate, JsonRpcRequest_EthSign, JsonRpcRequest_EthSignTransaction, JsonRpcRequest_SwitchEthereumChain
 from pywalletconnectv1.models.ethereum.wc_ethereum_sign_message import WCEthereumSignMessage, WCSignType
 
 logger = logging.getLogger(__name__)
@@ -202,14 +203,20 @@ class WCClient:
             response = JsonRpcResponse_ResultString(
                 jsonrpc= JSONRPC_VERSION,
                 id_ = id_,
-                result = result # result type: JsonRpcResponse_* or WCAccount
-        )
+                result = result 
+            )
         elif type(result) is WCAccount:
             response = JsonRpcResponse_ResultWCAccount(
                 jsonrpc= JSONRPC_VERSION,
                 id_ = id_,
-                result = result # result type: JsonRpcResponse_* or WCAccount
-        )
+                result = result 
+            )
+        elif result is None:
+            response = JsonRpcResponse_ResultNone(
+                jsonrpc= JSONRPC_VERSION,
+                id_ = id_,
+                result = None
+            )
         json= Pykson().to_json(response)
         return self.encryptAndSend(json)
     
@@ -335,7 +342,16 @@ class WCClient:
                 self.wc_callback.onEthSendTransaction(request.id_, param)
             except Exception as e:
                 logger.warning(f"Exception in handleRequest - ETH_SEND_TRANSACTION - {e}")
-                        
+        
+        elif method== WCMethod.SWITCH_CHAIN.value:
+            try: 
+                request= Pykson().from_json(payload, JsonRpcRequest_SwitchEthereumChain) # include param key
+                param= request.params[0] # take the first of the list or raise
+                logger.info(f"DEBUG in handleRequest - SWITCH_CHAIN - param: {param}")
+                self.wc_callback.onEthSwitchChain(request.id_, param)
+            except Exception as e:
+                logger.warning(f"Exception in handleRequest - SWITCH_CHAIN - {e}")
+        
         else:   
             logger.warning(f"WARNING in handleRequest - unsupported method: {method} - payload: {payload}")
                     

@@ -5,6 +5,7 @@ from ..models.wc_method import WCMethod
 from ..models.session.wc_session_request import WCSessionRequest
 from ..models.session.wc_session_update import WCSessionUpdate
 from ..models.ethereum.wc_ethereum_transaction import WCEthereumTransaction
+from ..models.ethereum.wc_ethereum_switch_chain import WCEthereumSwitchChain
 
 JSONRPC_VERSION= "2.0"
 
@@ -25,3 +26,6 @@ class JsonRpcRequest_EthSign(JsonRpcRequest):
     
 class JsonRpcRequest_EthSignTransaction(JsonRpcRequest):
     params= ObjectListField(WCEthereumTransaction)
+
+class JsonRpcRequest_SwitchEthereumChain(JsonRpcRequest):
+    params= ObjectListField(WCEthereumSwitchChain)

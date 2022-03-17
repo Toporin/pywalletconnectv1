@@ -26,3 +26,6 @@ class JsonRpcResponse_ResultString(JsonRpcResponse):
 
 class JsonRpcResponse_ResultWCAccount(JsonRpcResponse):
     result= ObjectField(WCAccount)
+
+class JsonRpcResponse_ResultNone(JsonRpcResponse):
+    result= StringField(null=True)
