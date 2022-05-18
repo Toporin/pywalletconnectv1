@@ -8,8 +8,8 @@ with open('requirements.txt') as f:
     requirements = f.read().splitlines()
 
 setuptools.setup(
-    name="pywalletconnectv1", 
-    version= "0.0.1",
+    name="pywalletconnectv1",
+    version= "0.1.0",
     author="Toporin",
     author_email="satochip.wallet@gmail.com",
     description="Simple python library that implements WalletConnect protocol v1",
