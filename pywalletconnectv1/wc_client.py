@@ -1,5 +1,7 @@
 import logging
 import websocket
+import ssl
+import certifi
 import threading
 import uuid
 import time
@@ -25,6 +27,10 @@ logger = logging.getLogger(__name__)
 
 JSONRPC_VERSION = "2.0"
 WS_CLOSE_NORMAL = 1000
+
+ssl_context = ssl.create_default_context()
+ssl_context.load_verify_locations(certifi.where())
+ssl_opts={'context': ssl_context}
 
 class WCClient:
     
@@ -133,11 +139,11 @@ class WCClient:
         #socket = websocket.WebSocket()
         #websocket.enableTrace(True)
         self.socket = websocket.WebSocketApp(self.session.bridge, 
-                                                                            on_open= self.on_open,
-                                                                            on_message=self.on_message,
-                                                                            on_error= self.on_error)
+                                                on_open= self.on_open,
+                                                on_message=self.on_message,
+                                                on_error= self.on_error)
         #self.socket.run_forever() # TODO: non-blocking!
-        self.wst = threading.Thread(target=self.socket.run_forever)
+        self.wst = threading.Thread(target=self.socket.run_forever, kwargs={'sslopt':ssl_opts})
         self.wst.daemon = True
         self.wst.start()
         logger.info(f"connect - END")

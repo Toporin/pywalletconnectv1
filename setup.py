@@ -9,7 +9,7 @@ with open('requirements.txt') as f:
 
 setuptools.setup(
     name="pywalletconnectv1",
-    version= "0.1.1",
+    version= "0.1.2",
     author="Toporin",
     author_email="satochip.wallet@gmail.com",
     description="Simple python library that implements WalletConnect protocol v1",
